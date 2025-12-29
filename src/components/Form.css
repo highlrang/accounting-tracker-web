@@ -1,0 +1,71 @@
+.form-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem; /* Increased gap for better spacing */
+  }
+  
+  .form-container h2 {
+    margin: 0 0 1.5rem; /* Adjusted margin */
+    font-size: 1.8rem; /* Larger font size */
+    color: #2c3e50;
+    text-align: center; /* Center align form titles */
+    border-bottom: 1px solid #eee; /* Subtle separator */
+    padding-bottom: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 0.6rem; /* Adjusted margin */
+    font-weight: 600;
+    color: #34495e;
+    font-size: 0.95rem; /* Slightly smaller label font */
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.8rem 1rem; /* Slightly more padding */
+    border: 1px solid #ccc; /* Consistent border color */
+    border-radius: 6px; /* Consistent border radius */
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+  }
+  
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem; /* Increased margin-top */
+  }
+
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    border: 1px solid #eee;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    background-color: #fcfcfc;
+  }
+
+  .form-row .form-group {
+    flex: 1 1 auto; /* Allow form groups to grow and shrink */
+    min-width: 150px; /* Minimum width for responsiveness */
+  }
+
+  .form-row-actions {
+    flex-shrink: 0;
+  }

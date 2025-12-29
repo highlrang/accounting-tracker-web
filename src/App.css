@@ -1,0 +1,319 @@
+body {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f7f6;
+  color: #333;
+  line-height: 1.6;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  color: #2c3e50;
+  font-size: 2.2rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+h2 {
+  color: #2c3e50;
+  font-size: 1.8rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.container {
+  margin: 0;
+  background-color: #fff;
+}
+
+.app-header {
+    background-color: #2c3e50;
+    padding: 0 2rem;
+    border-bottom: 1px solid #2c3e50;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.app-header nav {
+    display: flex;
+    gap: 1.5rem;
+    max-width: 1200px; /* Wider content area for nav */
+    margin: 0 auto;
+}
+
+.app-header nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 2rem;
+    font-weight: 500;
+    padding: 1rem 0;
+    border-bottom: 3px solid transparent; /* Thicker underline for active */
+    transition: border-bottom-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.app-header nav a:hover {
+    /* border-bottom-color: #5dade2; */
+}
+
+.app-header nav a.active {
+    border-bottom-color: #3498db;
+    color: #3498db; /* Active link color */
+}
+
+main {
+    padding: 2rem;
+    max-width: 1200px; /* Wider content area for main */
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 2.2rem;
+  color: #2c3e50;
+}
+
+.button-primary, .button-secondary {
+  padding: 0.6rem 1.4rem; /* Reduced padding */
+  border-radius: 6px;
+  font-size: 0.9rem; /* Reduced font size */
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.button-primary {
+  background-color: #3498db;
+  color: #fff;
+  border: 1px solid #3498db;
+}
+
+.button-primary:hover {
+  background-color: #2980b9;
+  border-color: #2980b9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.button-secondary {
+  background-color: #ecf0f1;
+  color: #34495e;
+  border: 1px solid #bdc3c7;
+}
+
+.button-secondary:hover {
+  background-color: #dadedf;
+  border-color: #aeb5bb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.search-bar {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+  background-color: #fcfcfc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.search-input,
+.filter-select {
+  padding: 0.6rem 0.8rem; /* Reduced padding */
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.9rem; /* Reduced font size */
+  flex-grow: 0.3; /* Allow some growth but not full */
+  width: auto; /* Allow width to be determined by content or max-width */
+  max-width: 150px; /* Limit width for date inputs */
+  color: black;
+  background-color: #fff;
+  transition: border-color 0.3s;
+}
+
+.search-input[type="text"] {
+    max-width: 300px; /* Allow company search to be wider */
+    flex-grow: 0.5; /* Give it more flexibility to grow */
+}
+
+.search-input:focus,
+.filter-select:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.settlement-table {
+  width: 100%;
+  border-collapse: separate; /* Use separate to allow border-radius on cells */
+  border-spacing: 0;
+  margin-top: 1rem;
+  border-radius: 8px; /* Apply border-radius to the table */
+  overflow: hidden; /* Hide overflowing borders for rounded corners */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.settlement-table th,
+.settlement-table td {
+  padding: 1.2rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.settlement-table th {
+  background-color: #eef4f8;
+  color: #34495e;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.settlement-table tbody tr:last-child td {
+    border-bottom: none; /* No border for the last row */
+}
+
+.settlement-table tbody tr:nth-child(even) {
+  background-color: #f9fbfd; /* Subtle alternating row color */
+}
+
+.settlement-table tbody tr:hover {
+  background-color: #f0f8ff;
+}
+
+.status-paid {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.status-unpaid {
+  color: #e74c3c; /* A slightly softer red */
+  font-weight: bold;
+}
+
+.status-clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  transition: text-decoration-color 0.3s ease-in-out;
+  /* Add some padding to make it easier to click */
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.status-clickable:hover {
+    text-decoration-color: #3498db;
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+/* Custom Checkbox Styling */
+input[type="checkbox"] {
+  /* Hide default checkbox */
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  margin: 0; /* Reset default margin */
+  vertical-align: middle;
+  display: inline-block;
+  flex-shrink: 0; /* Prevent checkbox from shrinking in flex containers */
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+input[type="checkbox"]:hover {
+  border-color: #3498db;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+input[type="checkbox"]:checked::before {
+  content: '✓'; /* Checkmark symbol */
+  display: block;
+  font-size: 1rem;
+  color: #fff;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1; /* Adjust line-height to center vertically */
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+}
+
+/* Specific styles for statistics results */
+.statistics-results {
+  background-color: #fcfcfc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-top: 2rem;
+}
+
+.statistics-results p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  color: #34495e;
+}
+
+.statistics-results p strong {
+    color: #2c3e50;
+}
+
+/* Loading Spinner styles */
+.loading-spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s ease-in-out infinite;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+}
+
+/* Dark spinner for light backgrounds */
+.button-secondary .loading-spinner {
+    border-top-color: #3498db;
+    border-color: rgba(52, 152, 219, 0.3);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Styling for calendar icon in date and month inputs */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: brightness(0); /* Makes the icon black */
+  color: black; /* Fallback */
+}
