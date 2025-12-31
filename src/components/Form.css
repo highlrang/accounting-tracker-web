@@ -33,6 +33,7 @@
     font-size: 1rem;
     background-color: #fff;
     transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    color: black;
   }
   
   .form-group input:focus,

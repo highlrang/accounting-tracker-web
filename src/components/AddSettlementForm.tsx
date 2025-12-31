@@ -43,7 +43,16 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const validEntries = entries.filter(entry => entry.date && entry.company && entry.amount > 0);
+    const validEntries = entries.filter(entry => {
+      const isAmountValid = !isNaN(entry.amount) && entry.amount > 0;
+      return entry.date && entry.company && isAmountValid;
+    });
+
+    if (validEntries.length !== entries.length) {
+      alert('모든 항목의 날짜, 회사명, 금액은 필수 입력이며, 금액은 유효한 숫자여야 합니다.');
+      return;
+    }
+
     if (validEntries.length > 0) {
       const newSettlements: Omit<Settlement, 'id'>[] = validEntries.map(entry => ({
         ...entry,
@@ -86,9 +95,19 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               <label htmlFor={`amount-${index}`}>금액</label>
               <input
                 id={`amount-${index}`}
-                type="number"
-                value={entry.amount}
-                onChange={(e) => handleEntryChange(index, 'amount', e.target.value)}
+                type="text"
+                value={entry.amount === 0 ? '' : entry.amount.toLocaleString('ko-KR')}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/[^0-9]/g, ''); // 숫자만 남기기
+                  handleEntryChange(index, 'amount', rawValue === '' ? 0 : Number(rawValue));
+                }}
+                onBlur={(e) => {
+                  const formattedValue = Number(e.target.value.replace(/[^0-9]/g, '')).toLocaleString('ko-KR');
+                  e.target.value = formattedValue === '0' ? '' : formattedValue; // 0이면 빈 문자열로, 아니면 포맷팅된 값으로
+                }}
+                onFocus={(e) => {
+                  e.target.value = entry.amount === 0 ? '' : String(entry.amount); // 포커스 시 숫자만 보이도록
+                }}
                 required
               />
             </div>

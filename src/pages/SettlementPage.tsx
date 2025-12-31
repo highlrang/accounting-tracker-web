@@ -278,7 +278,7 @@ function SettlementPage() {
               <td data-label="순번">{index + 1}</td>
               <td data-label="날짜">{item.date}</td>
               <td data-label="회사명">{item.company}</td>
-              <td data-label="금액">{item.amount.toLocaleString()}원</td>
+              <td data-label="금액">{item.amount.toLocaleString('ko-KR')}원</td>
               <td data-label="입금여부">
                 <span 
                   className={`${item.paid ? 'status-paid' : 'status-unpaid'} status-clickable`}

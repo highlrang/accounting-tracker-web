@@ -290,7 +290,7 @@ function StatisticsPage() {
       </div>
       <div className="statistics-results">
         <p>총 건수: <strong>{totalCount}</strong> 건</p>
-        <p>총 금액: <strong>{totalAmount.toLocaleString()}</strong> 원</p>
+        <p>총 금액: <strong>{totalAmount.toLocaleString('ko-KR')}</strong> 원</p>
 
         {displayedStats.length > 0 && (
           <table className="settlement-table">
@@ -306,7 +306,7 @@ function StatisticsPage() {
                 <tr key={stat.period}>
                   <td data-label="기간">{stat.period}</td>
                   <td data-label="건수">{stat.count} 건</td>
-                  <td data-label="금액">{stat.amount.toLocaleString()} 원</td>
+                  <td data-label="금액">{stat.amount.toLocaleString('ko-KR')} 원</td>
                 </tr>
               ))}
             </tbody>
