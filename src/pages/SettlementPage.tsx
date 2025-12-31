@@ -4,7 +4,7 @@ import { fetchSettlements, addSettlements as apiAddSettlements, updateSettlement
 import { Settlement } from '../types';
 import Modal from '../components/Modal';
 import AddSettlementForm from '../components/AddSettlementForm';
-import UpdateStatusForm from '../components/UpdateStatusForm';
+import UpdateSettlementForm from '../components/UpdateSettlementForm';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 
 const ITEMS_PER_PAGE = 10; // Define items per page for infinite scroll
@@ -269,31 +269,19 @@ function SettlementPage() {
             <th>회사명</th>
             <th>금액</th>
             <th>입금여부</th>
-            <th>작업</th>
           </tr>
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={item.id}>
+            <tr key={item.id} onClick={() => openUpdateModal(item)} className="clickable-row">
               <td data-label="순번">{index + 1}</td>
               <td data-label="날짜">{item.date}</td>
               <td data-label="회사명">{item.company}</td>
               <td data-label="금액">{item.amount.toLocaleString('ko-KR')}원</td>
               <td data-label="입금여부">
-                <span 
-                  className={`${item.paid ? 'status-paid' : 'status-unpaid'} status-clickable`}
-                  onClick={() => openUpdateModal(item)}
-                >
+                <span className={item.paid ? 'status-paid' : 'status-unpaid'}>
                   {item.paid ? '입금완료' : '미입금'}
                 </span>
-              </td>
-              <td data-label="작업">
-                <button 
-                  className="button-secondary"
-                  onClick={() => openDeleteModal(item.id)}
-                >
-                  삭제
-                </button>
               </td>
             </tr>
           ))}
@@ -318,9 +306,10 @@ function SettlementPage() {
       </Modal>
       {selectedSettlement && (
         <Modal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)}>
-          <UpdateStatusForm
+          <UpdateSettlementForm
             settlement={selectedSettlement}
             onUpdate={handleUpdateSettlement}
+            onDelete={openDeleteModal}
             onClose={() => setIsUpdateModalOpen(false)}
           />
         </Modal>
