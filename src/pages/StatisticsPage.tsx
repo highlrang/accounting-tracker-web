@@ -238,8 +238,8 @@ function StatisticsPage() {
   if (initialLoading) {
     return (
       <div>
-        <div className="page-header">
-        </div>
+        {/* <div className="page-header">
+        </div> */}
         {/* <p>로딩중...</p> */}
       </div>
     );
@@ -247,38 +247,46 @@ function StatisticsPage() {
 
   return (
     <div>
-      <div className="page-header">
-      </div>
+      {/* <div className="page-header">
+      </div> */}
       <div className="search-bar">
-        <select 
-          className="filter-select" 
-          value={period}
-          onChange={(e) => handlePeriodChange(e.target.value as 'daily' | 'monthly' | 'yearly')}
-        >
-          <option value="daily">일별</option>
-          <option value="monthly">월별</option>
-          <option value="yearly">년별</option>
-        </select>
-        {renderDateInputs()}
-        <input 
-          type="text" 
-          placeholder="기업명으로 검색" 
-          className="search-input" 
-          value={tempCompanyFilter}
-          onChange={(e) => setTempCompanyFilter(e.target.value)}
-        />
-        <select 
-          className="filter-select" 
-          value={tempPaidFilter}
-          onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
-        >
-          <option value="all">입금여부 (전체)</option>
-          <option value="paid">입금완료</option>
-          <option value="unpaid">미입금</option>
-        </select>
-        <button className="search-button button-primary" onClick={handleSearch} disabled={isCalculatingStats}>
-          검색 {isCalculatingStats && <div className="loading-spinner"></div>}
-        </button>
+        <div className="search-bar-row">
+          <select 
+            className="filter-select" 
+            value={period}
+            onChange={(e) => handlePeriodChange(e.target.value as 'daily' | 'monthly' | 'yearly')}
+          >
+            <option value="daily">일별</option>
+            <option value="monthly">월별</option>
+            <option value="yearly">년별</option>
+          </select>
+        </div>
+        <div className="search-bar-row">
+          {renderDateInputs()}
+        </div>
+        <div className="search-bar-row">
+          <input 
+            type="text" 
+            placeholder="기업명으로 검색" 
+            className="search-input" 
+            value={tempCompanyFilter}
+            onChange={(e) => setTempCompanyFilter(e.target.value)}
+          />
+          <select 
+            className="filter-select" 
+            value={tempPaidFilter}
+            onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
+          >
+            <option value="all">입금여부 (전체)</option>
+            <option value="paid">입금완료</option>
+            <option value="unpaid">미입금</option>
+          </select>
+        </div>
+        <div className="search-bar-actions">
+          <button className="search-button button-primary" onClick={handleSearch} disabled={isCalculatingStats}>
+            검색 {isCalculatingStats && <div className="loading-spinner"></div>}
+          </button>
+        </div>
       </div>
       <div className="statistics-results">
         <p>총 건수: <strong>{totalCount}</strong> 건</p>
@@ -296,9 +304,9 @@ function StatisticsPage() {
             <tbody>
               {displayedStats.map((stat) => (
                 <tr key={stat.period}>
-                  <td>{stat.period}</td>
-                  <td>{stat.count} 건</td>
-                  <td>{stat.amount.toLocaleString()} 원</td>
+                  <td data-label="기간">{stat.period}</td>
+                  <td data-label="건수">{stat.count} 건</td>
+                  <td data-label="금액">{stat.amount.toLocaleString()} 원</td>
                 </tr>
               ))}
             </tbody>

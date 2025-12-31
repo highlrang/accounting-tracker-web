@@ -49,23 +49,31 @@
     margin-top: 2rem; /* Increased margin-top */
   }
 
-  .form-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    align-items: flex-end;
-    border: 1px solid #eee;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    background-color: #fcfcfc;
-  }
+  .form-content-scrollable {
+  max-height: 50vh; /* 화면 높이의 50%를 최대로 사용 */
+  overflow-y: scroll; /* 내용이 넘칠 경우 수직 스크롤 항상 생성 */
+  padding-right: 1rem; /* 스크롤바 공간 확보 */
+  margin-right: -1rem; /* 부모 패딩과 맞추기 위한 음수 마진 */
+}
 
-  .form-row .form-group {
-    flex: 1 1 auto; /* Allow form groups to grow and shrink */
-    min-width: 150px; /* Minimum width for responsiveness */
-  }
+.form-row {
+  display: flex;
+  /* flex-wrap: wrap; */ /* 제거하여 항상 한 줄에 배치 */
+  gap: 0.5rem; /* 간격 줄이기 */
+  align-items: flex-end;
+  border: 1px solid #eee;
+  padding: 0.8rem; /* 패딩 줄이기 */
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: #fcfcfc;
+}
 
-  .form-row-actions {
-    flex-shrink: 0;
-  }
+.form-row .form-group {
+  flex: 1 1 0px; /* 모든 그룹이 동일하게 공간을 차지하고 축소 가능 */
+  min-width: 0; /* flex 아이템이 내용물보다 작게 줄어들 수 있도록 허용 */
+}
+
+.form-row-actions {
+  flex: 0 0 auto; /* 액션 버튼은 내용에 따라 너비 유지 */
+  flex-shrink: 0;
+}

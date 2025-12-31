@@ -18,7 +18,10 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   position: relative;
   width: 90%;
-  /* max-width: 500px; */
+  max-width: 800px; /* 최대 너비 설정 */
+  max-height: 85vh; /* 화면 높이의 85%로 최대 높이 제한 */
+  display: flex;
+  flex-direction: column;
 }
 
 .modal-close-button {

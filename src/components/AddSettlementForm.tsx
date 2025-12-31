@@ -10,13 +10,12 @@ interface AddSettlementFormProps {
 interface NewSettlementEntry {
   date: string;
   company: string;
-  notes: string;
   amount: number;
 }
 
 const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose }) => {
   const [entries, setEntries] = useState<NewSettlementEntry[]>([
-    { date: '', company: '', notes: '', amount: 0 }
+    { date: '', company: '', amount: 0 }
   ]);
 
   const handleEntryChange = (index: number, field: keyof NewSettlementEntry, value: string | number) => {
@@ -31,7 +30,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
   };
 
   const handleAddRow = () => {
-    setEntries([...entries, { date: '', company: '', notes: '', amount: 0 }]);
+    setEntries([...entries, { date: '', company: '', amount: 0 }]);
   };
 
   const handleRemoveRow = (index: number) => {
@@ -60,56 +59,49 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h2>새 정산 항목 추가</h2>
-      {entries.map((entry, index) => (
-        <div key={index} className="form-row">
-          <div className="form-group">
-            <label htmlFor={`date-${index}`}>날짜</label>
-            <input
-              id={`date-${index}`}
-              type="date"
-              value={entry.date}
-              onChange={(e) => handleEntryChange(index, 'date', e.target.value)}
-              required
-            />
+      <div className="form-content-scrollable">
+        {entries.map((entry, index) => (
+          <div key={index} className="form-row">
+            <div className="form-group">
+              <label htmlFor={`date-${index}`}>날짜</label>
+              <input
+                id={`date-${index}`}
+                type="date"
+                value={entry.date}
+                onChange={(e) => handleEntryChange(index, 'date', e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor={`company-${index}`}>회사명</label>
+              <input
+                id={`company-${index}`}
+                type="text"
+                value={entry.company}
+                onChange={(e) => handleEntryChange(index, 'company', e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor={`amount-${index}`}>금액</label>
+              <input
+                id={`amount-${index}`}
+                type="number"
+                value={entry.amount}
+                onChange={(e) => handleEntryChange(index, 'amount', e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-row-actions">
+              {entries.length > 1 && (
+                <button type="button" className="button-secondary" onClick={() => handleRemoveRow(index)}>
+                  삭제
+                </button>
+              )}
+            </div>
           </div>
-          <div className="form-group">
-            <label htmlFor={`company-${index}`}>회사명</label>
-            <input
-              id={`company-${index}`}
-              type="text"
-              value={entry.company}
-              onChange={(e) => handleEntryChange(index, 'company', e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor={`notes-${index}`}>기타</label>
-            <input
-              id={`notes-${index}`}
-              type="text"
-              value={entry.notes}
-              onChange={(e) => handleEntryChange(index, 'notes', e.target.value)}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor={`amount-${index}`}>금액</label>
-            <input
-              id={`amount-${index}`}
-              type="number"
-              value={entry.amount}
-              onChange={(e) => handleEntryChange(index, 'amount', e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-row-actions">
-            {entries.length > 1 && (
-              <button type="button" className="button-secondary" onClick={() => handleRemoveRow(index)}>
-                삭제
-              </button>
-            )}
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
       <div className="form-actions">
         <button type="button" className="button-secondary" onClick={handleAddRow}>
           항목 추가

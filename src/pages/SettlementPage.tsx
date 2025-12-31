@@ -210,40 +210,46 @@ function SettlementPage() {
 
   return (
     <div>
-      <div className="page-header">
-      </div>
+      {/* <div className="page-header">
+      </div> */}
       <div className="search-bar">
-        <input 
-          type="date" 
-          className="search-input" 
-          value={tempStartDate}
-          onChange={(e) => setTempStartDate(e.target.value)}
-        />
-        <input 
-          type="date" 
-          className="search-input" 
-          value={tempEndDate}
-          onChange={(e) => setTempEndDate(e.target.value)}
-        />
-        <input 
-          type="text" 
-          placeholder="기업명으로 검색" 
-          className="search-input" 
-          value={tempCompanyFilter}
-          onChange={(e) => setTempCompanyFilter(e.target.value)}
-        />
-        <select
-  className="filter-select"
-  value={tempPaidFilter}
-  onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
->
-          <option value="all">입금여부 (전체)</option>
-          <option value="paid">입금완료</option>
-          <option value="unpaid">미입금</option>
-        </select>
-        <button className="search-button button-primary" onClick={handleSearch} disabled={isUpdating}>
-          검색 {isUpdating && <div className="loading-spinner"></div>}
-        </button>
+        <div className="search-bar-row">
+          <input 
+            type="date" 
+            className="search-input" 
+            value={tempStartDate}
+            onChange={(e) => setTempStartDate(e.target.value)}
+          />
+          <input 
+            type="date" 
+            className="search-input" 
+            value={tempEndDate}
+            onChange={(e) => setTempEndDate(e.target.value)}
+          />
+        </div>
+        <div className="search-bar-row">
+          <input 
+            type="text" 
+            placeholder="기업명으로 검색" 
+            className="search-input" 
+            value={tempCompanyFilter}
+            onChange={(e) => setTempCompanyFilter(e.target.value)}
+          />
+          <select
+            className="filter-select"
+            value={tempPaidFilter}
+            onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
+          >
+            <option value="all">입금여부 (전체)</option>
+            <option value="paid">입금완료</option>
+            <option value="unpaid">미입금</option>
+          </select>
+        </div>
+        <div className="search-bar-actions">
+          <button className="search-button button-primary" onClick={handleSearch} disabled={isUpdating}>
+            검색 {isUpdating && <div className="loading-spinner"></div>}
+          </button>
+        </div>
       </div>
 
       <div style={{marginBottom: '1rem', display: 'flex', justifyContent: 'flex-end'}}>
@@ -261,7 +267,6 @@ function SettlementPage() {
             <th>순번</th>
             <th>날짜</th>
             <th>회사명</th>
-            <th>기타</th>
             <th>금액</th>
             <th>입금여부</th>
             <th>작업</th>
@@ -270,12 +275,11 @@ function SettlementPage() {
         <tbody>
           {data.map((item, index) => (
             <tr key={item.id}>
-              <td>{index + 1}</td>
-              <td>{item.date}</td>
-              <td>{item.company}</td>
-              <td>{item.notes}</td>
-              <td>{item.amount.toLocaleString()}원</td>
-              <td>
+              <td data-label="순번">{index + 1}</td>
+              <td data-label="날짜">{item.date}</td>
+              <td data-label="회사명">{item.company}</td>
+              <td data-label="금액">{item.amount.toLocaleString()}원</td>
+              <td data-label="입금여부">
                 <span 
                   className={`${item.paid ? 'status-paid' : 'status-unpaid'} status-clickable`}
                   onClick={() => openUpdateModal(item)}
@@ -283,7 +287,7 @@ function SettlementPage() {
                   {item.paid ? '입금완료' : '미입금'}
                 </span>
               </td>
-              <td>
+              <td data-label="작업">
                 <button 
                   className="button-secondary"
                   onClick={() => openDeleteModal(item.id)}
