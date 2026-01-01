@@ -7,7 +7,7 @@ interface FetchSettlementsParams {
   size?: number;
   startDate?: string;
   endDate?: string;
-  companyName?: string;
+  keyword?: string;
   isPaid?: boolean;
 }
 
@@ -21,7 +21,7 @@ export const fetchSettlements = async ({
   size = 20,
   startDate,
   endDate,
-  companyName,
+  keyword,
   isPaid,
 }: FetchSettlementsParams): Promise<FetchSettlementsResult> => {
   const params = new URLSearchParams();
@@ -35,8 +35,8 @@ export const fetchSettlements = async ({
   if (endDate) {
     params.append('endDate', endDate);
   }
-  if (companyName) {
-    params.append('companyName', companyName);
+  if (keyword) {
+    params.append('keyword', keyword);
   }
   if (isPaid !== null && isPaid !== undefined) {
     params.append('isPaid', String(isPaid));
@@ -51,15 +51,16 @@ export const fetchSettlements = async ({
   const settlements: Settlement[] = data.content.map((item: any) => ({
     id: item.id,
     itemDate: item.itemDate,
-    companyName: item.companyName,
+    origin: item.origin,
+    destination: item.destination,
     amount: item.amount,
-    isPaid: item.isPaid
+    isPaid: item.isPaid,
   }));
 
   return { settlements, totalCount: data.totalElements };
 };
 
-export const addSettlements = async (newSettlementItems: Omit<Settlement, 'id'>[]): Promise<Settlement[]> => {
+export const addSettlements = async (newSettlementItems: Omit<Settlement, 'id' | 'isDeleted'>[]): Promise<Settlement[]> => {
   const results: Settlement[] = [];
   for (const item of newSettlementItems) {
     const response = await fetch(`${BASE_URL}/api/account-items`, {
@@ -69,9 +70,10 @@ export const addSettlements = async (newSettlementItems: Omit<Settlement, 'id'>[
       },
       body: JSON.stringify({
         itemDate: item.itemDate,
-        companyName: item.companyName,
+        origin: item.origin,
+        destination: item.destination,
         amount: item.amount,
-        isPaid: item.isPaid
+        isPaid: item.isPaid,
       }),
     });
     if (!response.ok) {
@@ -81,7 +83,8 @@ export const addSettlements = async (newSettlementItems: Omit<Settlement, 'id'>[
     results.push({
       id: addedItem.id,
       itemDate: addedItem.itemDate,
-      companyName: addedItem.companyName,
+      origin: addedItem.origin,
+      destination: addedItem.destination,
       amount: addedItem.amount,
       isPaid: addedItem.isPaid,
     });
@@ -97,9 +100,10 @@ export const updateSettlement = async (updatedSettlement: Settlement): Promise<S
     },
     body: JSON.stringify({
       itemDate: updatedSettlement.itemDate,
-      companyName: updatedSettlement.companyName,
+      origin: updatedSettlement.origin,
+      destination: updatedSettlement.destination,
       amount: updatedSettlement.amount,
-      isPaid: updatedSettlement.isPaid
+      isPaid: updatedSettlement.isPaid,
     }),
   });
   if (!response.ok) {
@@ -109,16 +113,16 @@ export const updateSettlement = async (updatedSettlement: Settlement): Promise<S
   return {
     id: data.id,
     itemDate: data.itemDate,
-    companyName: data.companyName,
+    origin: data.origin,
+    destination: data.destination,
     amount: data.amount,
-    isPaid: data.isPaid
+    isPaid: data.isPaid,
   };
 };
 
-export const updateSettlementsStatus = async (ids: number[], paidStatus: boolean): Promise<number[]> => {
+export const updateSettlementsStatus = async (ids: number[], isPaidStatus: boolean): Promise<number[]> => {
   const results: number[] = [];
   for (const id of ids) {
-    // fetch the current settlement to get all its fields
     const currentSettlementResponse = await fetch(`${BASE_URL}/api/account-items/${id}`);
     if (!currentSettlementResponse.ok) {
       console.error(`Failed to fetch settlement with id ${id}. Status: ${currentSettlementResponse.status}`);
@@ -129,12 +133,13 @@ export const updateSettlementsStatus = async (ids: number[], paidStatus: boolean
     const updatedSettlement: Settlement = {
       id: currentSettlementData.id,
       itemDate: currentSettlementData.itemDate,
-      companyName: currentSettlementData.companyName,
+      origin: currentSettlementData.origin,
+      destination: currentSettlementData.destination,
       amount: currentSettlementData.amount,
-      isPaid: paidStatus
+      isPaid: isPaidStatus,
     };
 
-    await updateSettlement(updatedSettlement); // Use the single update function
+    await updateSettlement(updatedSettlement);
     results.push(id);
   }
   return results;

@@ -36,13 +36,13 @@ function SettlementPage() {
   // Filter states for UI
   const [tempStartDate, setTempStartDate] = useState(getFormattedDate(oneYearAgo));
   const [tempEndDate, setTempEndDate] = useState(getFormattedDate(today));
-  const [tempCompanyNameFilter, setTempCompanyNameFilter] = useState('');
+  const [tempKeywordFilter, setTempKeywordFilter] = useState('');
   const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(null);
 
   // Committed filter states for filtering logic
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
-  const [companyNameFilter, setCompanyNameFilter] = useState('');
+  const [keywordFilter, setKeywordFilter] = useState('');
   const [paidFilter, setPaidFilter] = useState<boolean | null>(null);
 
   // Pagination states
@@ -66,7 +66,7 @@ function SettlementPage() {
         size: ITEMS_PER_PAGE,
         startDate: startDateFilter,
         endDate: endDateFilter,
-        companyName: companyNameFilter,
+        keyword: keywordFilter,
         isPaid: paidFilter ?? undefined,
       });
 
@@ -85,14 +85,14 @@ function SettlementPage() {
       setIsFetchingMore(false);
       setIsUpdating(false);
     }
-  }, [startDateFilter, endDateFilter, companyNameFilter, paidFilter]);
+  }, [startDateFilter, endDateFilter, keywordFilter, paidFilter]);
 
   // Effect for initial load and filter changes
   useEffect(() => {
     setInitialLoading(true); // Show full page loading for initial load or new search
     setCurrentPage(1); // Reset page to 1 on filter/search change
     loadData(1, false, true); // Load first page, replace data, show loading spinner
-  }, [startDateFilter, endDateFilter, companyNameFilter, paidFilter, loadData]);
+  }, [startDateFilter, endDateFilter, keywordFilter, paidFilter, loadData]);
 
   // Effect for fetching more data on page increment (infinite scroll)
   useEffect(() => {
@@ -127,21 +127,21 @@ function SettlementPage() {
     fetchSettlements({
       startDate: startDateFilter,
       endDate: endDateFilter,
-      companyName: companyNameFilter,
+      keyword: keywordFilter,
       isPaid: paidFilter ?? undefined,
       size: 100000, // Fetch all if totalCount is known
       page: 0,
     }).then(({ settlements }) => {
       setAllFilteredData(settlements);
     }).catch(error => console.error("Error fetching all filtered data:", error));
-  }, [startDateFilter, endDateFilter, companyNameFilter, paidFilter, totalCount]);
+  }, [startDateFilter, endDateFilter, keywordFilter, paidFilter, totalCount]);
 
 
   const handleSearch = () => {
     setCurrentPage(1); // Reset page on new search
     setStartDateFilter(tempStartDate);
     setEndDateFilter(tempEndDate);
-    setCompanyNameFilter(tempCompanyNameFilter);
+    setKeywordFilter(tempKeywordFilter);
     setPaidFilter(tempPaidFilter);
   };
 
@@ -230,10 +230,10 @@ function SettlementPage() {
         <div className="search-bar-row">
           <input 
             type="text" 
-            placeholder="기업명으로 검색" 
+            placeholder="키워드로 검색" 
             className="search-input" 
-            value={tempCompanyNameFilter}
-            onChange={(e) => setTempCompanyNameFilter(e.target.value)}
+            value={tempKeywordFilter}
+            onChange={(e) => setTempKeywordFilter(e.target.value)}
           />
           <select
             className="filter-select"
@@ -273,7 +273,8 @@ function SettlementPage() {
           <tr>
             <th>순번</th>
             <th>날짜</th>
-            <th>회사명</th>
+            <th>출발지</th>
+            <th>도착지</th>
             <th>금액</th>
             <th>입금여부</th>
           </tr>
@@ -283,7 +284,8 @@ function SettlementPage() {
             <tr key={item.id} onClick={() => openUpdateModal(item)} className="clickable-row">
               <td data-label="순번">{index + 1}</td>
               <td data-label="날짜">{item.itemDate}</td>
-              <td data-label="회사명">{item.companyName}</td>
+              <td data-label="출발지">{item.origin}</td>
+              <td data-label="도착지">{item.destination}</td>
               <td data-label="금액">{item.amount.toLocaleString('ko-KR')}원</td>
               <td data-label="입금여부">
                 <span className={item.isPaid ? 'status-paid' : 'status-unpaid'}>

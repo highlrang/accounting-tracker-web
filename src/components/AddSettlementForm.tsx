@@ -9,13 +9,14 @@ interface AddSettlementFormProps {
 
 interface NewSettlementEntry {
   itemDate: string;
-  companyName: string;
+  origin: string;
+  destination: string;
   amount: number;
 }
 
 const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose }) => {
   const [newSettlement, setNewSettlement] = useState<NewSettlementEntry>({
-    itemDate: '', companyName: '', amount: 0
+    itemDate: '', origin: '', destination: '', amount: 0
   });
 
   const handleChange = (field: keyof NewSettlementEntry, value: string | number) => {
@@ -28,14 +29,15 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const isAmountValid = !isNaN(newSettlement.amount) && newSettlement.amount > 0;
-    if (!newSettlement.itemDate || !newSettlement.companyName || !isAmountValid) {
-      alert('모든 항목의 날짜, 회사명, 금액은 필수 입력이며, 금액은 유효한 숫자여야 합니다.');
+    if (!newSettlement.itemDate || !newSettlement.origin || !newSettlement.destination || !isAmountValid) {
+      alert('모든 항목의 날짜, 출발지, 도착지, 금액은 필수 입력이며, 금액은 유효한 숫자여야 합니다.');
       return;
     }
 
     onAdd({
       itemDate: newSettlement.itemDate,
-      companyName: newSettlement.companyName,
+      origin: newSettlement.origin,
+      destination: newSettlement.destination,
       amount: newSettlement.amount,
       isPaid: false,
     });
@@ -58,12 +60,22 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
             />
           </div>
           <div className="form-group">
-            <label htmlFor="companyName">회사명</label>
+            <label htmlFor="origin">출발지</label>
             <input
-              id="companyName"
+              id="origin"
               type="text"
-              value={newSettlement.companyName}
-              onChange={(e) => handleChange('companyName', e.target.value)}
+              value={newSettlement.origin}
+              onChange={(e) => handleChange('origin', e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="destination">도착지</label>
+            <input
+              id="destination"
+              type="text"
+              value={newSettlement.destination}
+              onChange={(e) => handleChange('destination', e.target.value)}
               required
             />
           </div>

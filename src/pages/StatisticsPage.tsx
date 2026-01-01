@@ -31,7 +31,6 @@ function StatisticsPage() {
 
   const today = new Date();
 
-  const [tempCompanyFilter, setTempCompanyFilter] = useState('');
   const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
   const [period, setPeriod] = useState<'daily' | 'monthly' | 'yearly'>('monthly');
   const [tempStartDate, setTempStartDate] = useState(getFormattedDate(period, today));
@@ -39,7 +38,6 @@ function StatisticsPage() {
 
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
-  const [companyFilter, setCompanyFilter] = useState('');
   const [paidFilter, setPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
 
   const [totalCount, setTotalCount] = useState(0);
@@ -64,7 +62,6 @@ function StatisticsPage() {
     setIsCalculatingStats(true);
     setStartDateFilter(tempStartDate);
     setEndDateFilter(tempEndDate);
-    setCompanyFilter(tempCompanyFilter);
     setPaidFilter(tempPaidFilter);
   };
 
@@ -90,9 +87,6 @@ function StatisticsPage() {
       } else {
         result = result.filter(item => item.itemDate <= endDateFilter);
       }
-    }
-    if (companyFilter) {
-      result = result.filter(item => item.companyName.toLowerCase().includes(companyFilter.toLowerCase()));
     }
     if (paidFilter !== 'all') {
       result = result.filter(item => (paidFilter === 'paid' ? item.isPaid : !item.isPaid));
@@ -129,7 +123,7 @@ function StatisticsPage() {
     setCurrentPage(1);
     setHasMore(sortedStats.length > ITEMS_PER_PAGE);
     setIsCalculatingStats(false);
-  }, [startDateFilter, endDateFilter, companyFilter, paidFilter, data, period, initialLoading]);
+  }, [startDateFilter, endDateFilter, paidFilter, data, period, initialLoading]);
 
   // Effect for IntersectionObserver
   useEffect(() => {
@@ -265,13 +259,6 @@ function StatisticsPage() {
           {renderDateInputs()}
         </div>
         <div className="search-bar-row">
-          <input 
-            type="text" 
-            placeholder="기업명으로 검색" 
-            className="search-input" 
-            value={tempCompanyFilter}
-            onChange={(e) => setTempCompanyFilter(e.target.value)}
-          />
           <select 
             className="filter-select" 
             value={tempPaidFilter}
