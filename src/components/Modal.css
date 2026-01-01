@@ -19,9 +19,19 @@
   position: relative;
   width: 90%;
   max-width: 800px; /* 최대 너비 설정 */
-  max-height: 85vh; /* 화면 높이의 85%로 최대 높이 제한 */
   display: flex;
   flex-direction: column;
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
 }
 
 .modal-close-button {
@@ -37,4 +47,8 @@
 
 .modal-close-button:hover {
     color: #333;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
