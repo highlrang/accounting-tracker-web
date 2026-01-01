@@ -48,7 +48,7 @@
   
   .form-actions {
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* 버튼들을 가운데 정렬 */
     gap: 1rem;
     margin-top: 2rem; /* Increased margin-top */
   }
@@ -62,9 +62,9 @@
 
 .form-row {
   display: flex;
-  flex-wrap: nowrap; /* 항목들이 한 줄에 유지되도록 */
+  flex-direction: column; /* 항목들을 세로로 배치 */
   gap: 0.5rem; /* 간격 줄이기 */
-  align-items: flex-end;
+  /* align-items: flex-start; */ /* 제거하여 기본 stretch 적용 */
   border: 1px solid #eee;
   padding: 0.8rem; /* 패딩 줄이기 */
   border-radius: 8px;
@@ -73,7 +73,7 @@
 }
 
 .form-row .form-group {
-  flex: 1; /* 3개 항목이 동일한 너비를 갖도록 */
+  flex: 1; /* 모든 그룹이 가로로 확장되도록 */
   min-width: 0; /* flex 아이템이 내용물보다 작게 줄어들 수 있도록 허용 */
 }
 

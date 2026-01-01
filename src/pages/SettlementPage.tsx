@@ -37,13 +37,13 @@ function SettlementPage() {
   const [tempStartDate, setTempStartDate] = useState(getFormattedDate(oneYearAgo));
   const [tempEndDate, setTempEndDate] = useState(getFormattedDate(today));
   const [tempCompanyNameFilter, setTempCompanyNameFilter] = useState('');
-  const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(null);
 
   // Committed filter states for filtering logic
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
   const [companyNameFilter, setCompanyNameFilter] = useState('');
-  const [paidFilter, setPaidFilter] = useState<boolean | undefined>();
+  const [paidFilter, setPaidFilter] = useState<boolean | null>(null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -128,7 +128,7 @@ function SettlementPage() {
       startDate: startDateFilter,
       endDate: endDateFilter,
       companyName: companyNameFilter,
-      isPaid: paidFilter,
+      isPaid: paidFilter ?? undefined,
       size: 100000, // Fetch all if totalCount is known
       page: 0,
     }).then(({ settlements }) => {
@@ -142,11 +142,11 @@ function SettlementPage() {
     setStartDateFilter(tempStartDate);
     setEndDateFilter(tempEndDate);
     setCompanyNameFilter(tempCompanyNameFilter);
-    setPaidFilter(undefined);
+    setPaidFilter(tempPaidFilter);
   };
 
-  const handleAddSettlement = (newSettlements: Omit<Settlement, 'id' | 'isDeleted'>[]) => {
-    apiAddSettlements(newSettlements).then(() => {
+  const handleAddSettlement = (newSettlement: Omit<Settlement, 'id' | 'isDeleted'>) => {
+    apiAddSettlements([newSettlement]).then(() => {
       loadData(1, false, true); // Reload first page after add operation
     });
   };
@@ -237,8 +237,15 @@ function SettlementPage() {
           />
           <select
             className="filter-select"
-            value={tempPaidFilter}
-            onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
+            value={tempPaidFilter === null ? 'all' : tempPaidFilter ? 'paid' : 'unpaid'}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === 'all') {
+                setTempPaidFilter(null);
+              } else {
+                setTempPaidFilter(value === 'paid');
+              }
+            }}
           >
             <option value="all">입금여부 (전체)</option>
             <option value="paid">입금완료</option>

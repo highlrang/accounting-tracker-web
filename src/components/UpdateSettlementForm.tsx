@@ -96,7 +96,7 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
           </div>
         </div>
       </div>
-      <div className="form-actions">
+      <div className="form-actions" style={{ justifyContent: 'space-between' }}>
         <button type="button" onClick={handleDelete} className="button-danger">삭제</button>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <button type="submit" className="button-primary">저장</button>
