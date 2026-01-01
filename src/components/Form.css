@@ -25,16 +25,19 @@
     font-size: 0.95rem; /* Slightly smaller label font */
   }
   
-  .form-group input,
-  .form-group select {
-    padding: 0.8rem 1rem; /* Slightly more padding */
-    border: 1px solid #ccc; /* Consistent border color */
-    border-radius: 6px; /* Consistent border radius */
-    font-size: 1rem;
-    background-color: #fff;
-    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    color: black;
-  }
+.form-group input,
+.form-group select {
+  width: 100%; /* 부모 요소의 너비를 채우도록 설정 */
+  min-width: 0; /* 입력 필드가 내용물보다 작게 줄어들 수 있도록 허용 */
+  box-sizing: border-box; /* 패딩과 보더가 너비에 포함되도록 */
+  padding: 0.8rem 1rem; /* Slightly more padding */
+  border: 1px solid #ccc; /* Consistent border color */
+  border-radius: 6px; /* Consistent border radius */
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  color: black;
+}
   
   .form-group input:focus,
   .form-group select:focus {
@@ -59,7 +62,7 @@
 
 .form-row {
   display: flex;
-  /* flex-wrap: wrap; */ /* 제거하여 항상 한 줄에 배치 */
+  flex-wrap: nowrap; /* 항목들이 한 줄에 유지되도록 */
   gap: 0.5rem; /* 간격 줄이기 */
   align-items: flex-end;
   border: 1px solid #eee;
@@ -70,7 +73,7 @@
 }
 
 .form-row .form-group {
-  flex: 1 1 0px; /* 모든 그룹이 동일하게 공간을 차지하고 축소 가능 */
+  flex: 1; /* 3개 항목이 동일한 너비를 갖도록 */
   min-width: 0; /* flex 아이템이 내용물보다 작게 줄어들 수 있도록 허용 */
 }
 

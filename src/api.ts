@@ -1,6 +1,6 @@
 import { Settlement } from './types';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 interface FetchSettlementsParams {
   page?: number;
@@ -111,7 +111,7 @@ export const updateSettlement = async (updatedSettlement: Settlement): Promise<S
     itemDate: data.itemDate,
     companyName: data.companyName,
     amount: data.amount,
-    paid: data.isPaid
+    isPaid: data.isPaid
   };
 };
 

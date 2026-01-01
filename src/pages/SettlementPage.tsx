@@ -37,13 +37,13 @@ function SettlementPage() {
   const [tempStartDate, setTempStartDate] = useState(getFormattedDate(oneYearAgo));
   const [tempEndDate, setTempEndDate] = useState(getFormattedDate(today));
   const [tempCompanyNameFilter, setTempCompanyNameFilter] = useState('');
-  const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(null);
+  const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
 
   // Committed filter states for filtering logic
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
   const [companyNameFilter, setCompanyNameFilter] = useState('');
-  const [paidFilter, setPaidFilter] = useState<boolean | null>(null);
+  const [paidFilter, setPaidFilter] = useState<boolean | undefined>();
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -142,7 +142,7 @@ function SettlementPage() {
     setStartDateFilter(tempStartDate);
     setEndDateFilter(tempEndDate);
     setCompanyNameFilter(tempCompanyNameFilter);
-    setPaidFilter(tempPaidFilter);
+    setPaidFilter(undefined);
   };
 
   const handleAddSettlement = (newSettlements: Omit<Settlement, 'id' | 'isDeleted'>[]) => {
@@ -237,15 +237,8 @@ function SettlementPage() {
           />
           <select
             className="filter-select"
-            value={tempPaidFilter === null ? 'all' : tempPaidFilter ? 'paid' : 'unpaid'}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (value === 'all') {
-                setTempPaidFilter(null);
-              } else {
-                setTempPaidFilter(value === 'paid');
-              }
-            }}
+            value={tempPaidFilter}
+            onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
           >
             <option value="all">입금여부 (전체)</option>
             <option value="paid">입금완료</option>
