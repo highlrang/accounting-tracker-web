@@ -1,7 +1,8 @@
 export interface Settlement {
   id: number;
-  date: string;
-  company: string;
-  paid: boolean;
+  itemDate: string;
+  companyName: string;
+  isPaid: boolean;
   amount: number;
+  isDeleted?: boolean;
 }

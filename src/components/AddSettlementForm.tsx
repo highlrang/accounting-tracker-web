@@ -1,36 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Settlement } from '../types';
 import './Form.css';
 
 interface AddSettlementFormProps {
-  onAdd: (newSettlements: Omit<Settlement, 'id'>[]) => void;
+  onAdd: (newSettlements: Omit<Settlement, 'id' | 'isDeleted'>[]) => void;
   onClose: () => void;
 }
 
 interface NewSettlementEntry {
-  date: string;
-  company: string;
+  itemDate: string;
+  companyName: string;
   amount: number;
 }
 
 const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose }) => {
   const [entries, setEntries] = useState<NewSettlementEntry[]>([
-    { date: '', company: '', amount: 0 }
+    { itemDate: '', companyName: '', amount: 0 }
   ]);
+  const scrollableContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleEntryChange = (index: number, field: keyof NewSettlementEntry, value: string | number) => {
+  useEffect(() => {
+    if (scrollableContainerRef.current) {
+      scrollableContainerRef.current.scrollTop = scrollableContainerRef.current.scrollHeight;
+    }
+  }, [entries]);
+
+  const handleEntryChange = (index: number, field: keyof Omit<NewSettlementEntry, 'description'>, value: string | number) => {
     const newEntries = [...entries];
-    // Special handling for amount as it's a number
     if (field === 'amount') {
         newEntries[index][field] = Number(value);
     } else {
-        newEntries[index][field] = value as any; // Type assertion for other fields
+        newEntries[index][field] = value as any;
     }
     setEntries(newEntries);
   };
 
   const handleAddRow = () => {
-    setEntries([...entries, { date: '', company: '', amount: 0 }]);
+    setEntries([...entries, { itemDate: '', companyName: '', amount: 0 }]);
   };
 
   const handleRemoveRow = (index: number) => {
@@ -45,7 +51,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
     e.preventDefault();
     const validEntries = entries.filter(entry => {
       const isAmountValid = !isNaN(entry.amount) && entry.amount > 0;
-      return entry.date && entry.company && isAmountValid;
+      return entry.itemDate && entry.companyName && isAmountValid;
     });
 
     if (validEntries.length !== entries.length) {
@@ -54,9 +60,11 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
     }
 
     if (validEntries.length > 0) {
-      const newSettlements: Omit<Settlement, 'id'>[] = validEntries.map(entry => ({
-        ...entry,
-        paid: false,
+      const newSettlements: Omit<Settlement, 'id' | 'isDeleted'>[] = validEntries.map(entry => ({
+        itemDate: entry.itemDate,
+        companyName: entry.companyName,
+        amount: entry.amount,
+        isPaid: false,
       }));
       onAdd(newSettlements);
       onClose();
@@ -68,26 +76,26 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
   return (
     <form onSubmit={handleSubmit} className="form-container">
       <h2>새 정산 항목 추가</h2>
-      <div className="form-content-scrollable">
+      <div ref={scrollableContainerRef} className="form-content-scrollable">
         {entries.map((entry, index) => (
           <div key={index} className="form-row">
             <div className="form-group">
-              <label htmlFor={`date-${index}`}>날짜</label>
+              <label htmlFor={`itemDate-${index}`}>날짜</label>
               <input
-                id={`date-${index}`}
+                id={`itemDate-${index}`}
                 type="date"
-                value={entry.date}
-                onChange={(e) => handleEntryChange(index, 'date', e.target.value)}
+                value={entry.itemDate}
+                onChange={(e) => handleEntryChange(index, 'itemDate', e.target.value)}
                 required
               />
             </div>
             <div className="form-group">
-              <label htmlFor={`company-${index}`}>회사명</label>
+              <label htmlFor={`companyName-${index}`}>회사명</label>
               <input
-                id={`company-${index}`}
+                id={`companyName-${index}`}
                 type="text"
-                value={entry.company}
-                onChange={(e) => handleEntryChange(index, 'company', e.target.value)}
+                value={entry.companyName}
+                onChange={(e) => handleEntryChange(index, 'companyName', e.target.value)}
                 required
               />
             </div>
@@ -111,6 +119,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
                 required
               />
             </div>
+            
             <div className="form-row-actions">
               {entries.length > 1 && (
                 <button type="button" className="button-secondary" onClick={() => handleRemoveRow(index)}>
@@ -125,8 +134,10 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
         <button type="button" className="button-secondary" onClick={handleAddRow}>
           항목 추가
         </button>
-        <button type="submit" className="button-primary">저장</button>
-        <button type="button" onClick={onClose} className="button-secondary">취소</button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button type="submit" className="button-primary">저장</button>
+          <button type="button" onClick={onClose} className="button-secondary">취소</button>
+        </div>
       </div>
     </form>
   );

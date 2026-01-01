@@ -36,14 +36,14 @@ function SettlementPage() {
   // Filter states for UI
   const [tempStartDate, setTempStartDate] = useState(getFormattedDate(oneYearAgo));
   const [tempEndDate, setTempEndDate] = useState(getFormattedDate(today));
-  const [tempCompanyFilter, setTempCompanyFilter] = useState('');
-  const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [tempCompanyNameFilter, setTempCompanyNameFilter] = useState('');
+  const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(null);
 
   // Committed filter states for filtering logic
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
-  const [companyFilter, setCompanyFilter] = useState('');
-  const [paidFilter, setPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const [companyNameFilter, setCompanyNameFilter] = useState('');
+  const [paidFilter, setPaidFilter] = useState<boolean | null>(null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -62,12 +62,12 @@ function SettlementPage() {
 
     try {
       const { settlements, totalCount: newTotalCount } = await fetchSettlements({
-        offset: (page - 1) * ITEMS_PER_PAGE,
-        limit: ITEMS_PER_PAGE,
+        page: page - 1, // API uses 0-indexed pages
+        size: ITEMS_PER_PAGE,
         startDate: startDateFilter,
         endDate: endDateFilter,
-        company: companyFilter,
-        paidStatus: paidFilter,
+        companyName: companyNameFilter,
+        isPaid: paidFilter ?? undefined,
       });
 
       if (append) {
@@ -85,14 +85,14 @@ function SettlementPage() {
       setIsFetchingMore(false);
       setIsUpdating(false);
     }
-  }, []);
+  }, [startDateFilter, endDateFilter, companyNameFilter, paidFilter]);
 
   // Effect for initial load and filter changes
   useEffect(() => {
     setInitialLoading(true); // Show full page loading for initial load or new search
     setCurrentPage(1); // Reset page to 1 on filter/search change
     loadData(1, false, true); // Load first page, replace data, show loading spinner
-  }, [startDateFilter, endDateFilter, companyFilter, paidFilter, loadData]);
+  }, [startDateFilter, endDateFilter, companyNameFilter, paidFilter, loadData]);
 
   // Effect for fetching more data on page increment (infinite scroll)
   useEffect(() => {
@@ -127,25 +127,25 @@ function SettlementPage() {
     fetchSettlements({
       startDate: startDateFilter,
       endDate: endDateFilter,
-      company: companyFilter,
-      paidStatus: paidFilter,
-      limit: 100000, // Fetch all if totalCount is known
-      offset: 0,
+      companyName: companyNameFilter,
+      isPaid: paidFilter,
+      size: 100000, // Fetch all if totalCount is known
+      page: 0,
     }).then(({ settlements }) => {
       setAllFilteredData(settlements);
     }).catch(error => console.error("Error fetching all filtered data:", error));
-  }, [startDateFilter, endDateFilter, companyFilter, paidFilter, totalCount]);
+  }, [startDateFilter, endDateFilter, companyNameFilter, paidFilter, totalCount]);
 
 
   const handleSearch = () => {
     setCurrentPage(1); // Reset page on new search
     setStartDateFilter(tempStartDate);
     setEndDateFilter(tempEndDate);
-    setCompanyFilter(tempCompanyFilter);
+    setCompanyNameFilter(tempCompanyNameFilter);
     setPaidFilter(tempPaidFilter);
   };
 
-  const handleAddSettlement = (newSettlements: Omit<Settlement, 'id'>[]) => {
+  const handleAddSettlement = (newSettlements: Omit<Settlement, 'id' | 'isDeleted'>[]) => {
     apiAddSettlements(newSettlements).then(() => {
       loadData(1, false, true); // Reload first page after add operation
     });
@@ -232,13 +232,20 @@ function SettlementPage() {
             type="text" 
             placeholder="기업명으로 검색" 
             className="search-input" 
-            value={tempCompanyFilter}
-            onChange={(e) => setTempCompanyFilter(e.target.value)}
+            value={tempCompanyNameFilter}
+            onChange={(e) => setTempCompanyNameFilter(e.target.value)}
           />
           <select
             className="filter-select"
-            value={tempPaidFilter}
-            onChange={(e) => setTempPaidFilter(e.target.value as 'all' | 'paid' | 'unpaid')}
+            value={tempPaidFilter === null ? 'all' : tempPaidFilter ? 'paid' : 'unpaid'}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === 'all') {
+                setTempPaidFilter(null);
+              } else {
+                setTempPaidFilter(value === 'paid');
+              }
+            }}
           >
             <option value="all">입금여부 (전체)</option>
             <option value="paid">입금완료</option>
@@ -275,12 +282,12 @@ function SettlementPage() {
           {data.map((item, index) => (
             <tr key={item.id} onClick={() => openUpdateModal(item)} className="clickable-row">
               <td data-label="순번">{index + 1}</td>
-              <td data-label="날짜">{item.date}</td>
-              <td data-label="회사명">{item.company}</td>
+              <td data-label="날짜">{item.itemDate}</td>
+              <td data-label="회사명">{item.companyName}</td>
               <td data-label="금액">{item.amount.toLocaleString('ko-KR')}원</td>
               <td data-label="입금여부">
-                <span className={item.paid ? 'status-paid' : 'status-unpaid'}>
-                  {item.paid ? '입금완료' : '미입금'}
+                <span className={item.isPaid ? 'status-paid' : 'status-unpaid'}>
+                  {item.isPaid ? '입금완료' : '미입금'}
                 </span>
               </td>
             </tr>

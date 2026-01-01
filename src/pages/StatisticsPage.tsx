@@ -54,7 +54,7 @@ function StatisticsPage() {
   const observerTarget = useRef(null);
 
   useEffect(() => {
-    fetchSettlements({ limit: 100000 }).then(({ settlements }) => {
+    fetchSettlements({ size: 100000, page: 0 }).then(({ settlements }) => {
       setData(settlements);
       setInitialLoading(false);
     });
@@ -75,27 +75,27 @@ function StatisticsPage() {
 
     if (startDateFilter) {
       if (period === 'yearly') {
-        result = result.filter(item => item.date >= `${startDateFilter}-01-01`);
+        result = result.filter(item => item.itemDate >= `${startDateFilter}-01-01`);
       } else if (period === 'monthly') {
-        result = result.filter(item => item.date >= `${startDateFilter}-01`);
+        result = result.filter(item => item.itemDate >= `${startDateFilter}-01`);
       } else {
-        result = result.filter(item => item.date >= startDateFilter);
+        result = result.filter(item => item.itemDate >= startDateFilter);
       }
     }
     if (endDateFilter) {
       if (period === 'yearly') {
-        result = result.filter(item => item.date <= `${endDateFilter}-12-31`);
+        result = result.filter(item => item.itemDate <= `${endDateFilter}-12-31`);
       } else if (period === 'monthly') {
-        result = result.filter(item => item.date <= `${endDateFilter}-31`);
+        result = result.filter(item => item.itemDate <= `${endDateFilter}-31`);
       } else {
-        result = result.filter(item => item.date <= endDateFilter);
+        result = result.filter(item => item.itemDate <= endDateFilter);
       }
     }
     if (companyFilter) {
-      result = result.filter(item => item.company.toLowerCase().includes(companyFilter.toLowerCase()));
+      result = result.filter(item => item.companyName.toLowerCase().includes(companyFilter.toLowerCase()));
     }
     if (paidFilter !== 'all') {
-      result = result.filter(item => (paidFilter === 'paid' ? item.paid : !item.paid));
+      result = result.filter(item => (paidFilter === 'paid' ? item.isPaid : !item.isPaid));
     }
 
     setTotalCount(result.length);
@@ -105,11 +105,11 @@ function StatisticsPage() {
     result.forEach(item => {
       let key = '';
       if (period === 'daily') {
-        key = item.date;
+        key = item.itemDate;
       } else if (period === 'monthly') {
-        key = item.date.substring(0, 7);
+        key = item.itemDate.substring(0, 7);
       } else {
-        key = item.date.substring(0, 4);
+        key = item.itemDate.substring(0, 4);
       }
 
       if (!statsMap.has(key)) {

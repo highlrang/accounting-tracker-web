@@ -10,25 +10,25 @@ interface UpdateSettlementFormProps {
 }
 
 const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement, onUpdate, onDelete, onClose }) => {
-  const [date, setDate] = useState(settlement.date);
-  const [company, setCompany] = useState(settlement.company);
+  const [itemDate, setItemDate] = useState(settlement.itemDate);
+  const [companyName, setCompanyName] = useState(settlement.companyName);
   const [amount, setAmount] = useState(settlement.amount);
-  const [paid, setPaid] = useState(settlement.paid);
+  const [isPaid, setIsPaid] = useState(settlement.isPaid);
 
   useEffect(() => {
-    setDate(settlement.date);
-    setCompany(settlement.company);
+    setItemDate(settlement.itemDate);
+    setCompanyName(settlement.companyName);
     setAmount(settlement.amount);
-    setPaid(settlement.paid);
+    setIsPaid(settlement.isPaid);
   }, [settlement]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !company || isNaN(amount) || amount <= 0) {
+    if (!itemDate || !companyName || isNaN(amount) || amount <= 0) {
       alert('모든 항목의 날짜, 회사명, 금액은 필수 입력이며, 금액은 유효한 숫자여야 합니다.');
       return;
     }
-    onUpdate({ ...settlement, date, company, amount, paid });
+    onUpdate({ ...settlement, itemDate, companyName, amount, isPaid });
     onClose();
   };
 
@@ -43,22 +43,22 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
       <div className="form-content-scrollable">
         <div className="form-row">
           <div className="form-group">
-            <label htmlFor="date">날짜</label>
+            <label htmlFor="itemDate">날짜</label>
             <input
-              id="date"
+              id="itemDate"
               type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
+              value={itemDate}
+              onChange={(e) => setItemDate(e.target.value)}
               required
             />
           </div>
           <div className="form-group">
-            <label htmlFor="company">회사명</label>
+            <label htmlFor="companyName">회사명</label>
             <input
-              id="company"
+              id="companyName"
               type="text"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
               required
             />
           </div>
@@ -83,11 +83,11 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
             />
           </div>
           <div className="form-group">
-            <label htmlFor="paid">입금여부</label>
+            <label htmlFor="isPaid">입금여부</label>
             <select
-              id="paid"
-              value={paid ? 'paid' : 'unpaid'}
-              onChange={(e) => setPaid(e.target.value === 'paid')}
+              id="isPaid"
+              value={isPaid ? 'paid' : 'unpaid'}
+              onChange={(e) => setIsPaid(e.target.value === 'paid')}
               className="filter-select"
             >
               <option value="paid">입금완료</option>
@@ -97,9 +97,11 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
         </div>
       </div>
       <div className="form-actions">
-        <button type="submit" className="button-primary">저장</button>
-        <button type="button" onClick={onClose} className="button-secondary">취소</button>
         <button type="button" onClick={handleDelete} className="button-danger">삭제</button>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button type="submit" className="button-primary">저장</button>
+          <button type="button" onClick={onClose} className="button-secondary">취소</button>
+        </div>
       </div>
     </form>
   );
