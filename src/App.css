@@ -382,7 +382,7 @@ input[type="month"]::-webkit-calendar-picker-indicator {
     align-items: center;
     border: none;
     border-bottom: 1px solid #eee;
-    padding: 0.8rem 1rem; /* 테이블 셀 패딩 줄이기 */
+    padding: 0.5rem 0.8rem; /* 테이블 셀 패딩 줄이기 */
     text-align: right;
     box-sizing: border-box; /* 패딩을 너비에 포함하여 오버플로우 방지 */
   }
