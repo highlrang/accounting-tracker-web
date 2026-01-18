@@ -28,6 +28,7 @@ export const fetchSettlements = async ({
   params.append('page', page.toString());
   params.append('size', size.toString());
   params.append('sort', 'itemDate,DESC');
+  params.append('sort', 'createdAt,DESC');
 
   if (startDate) {
     params.append('startDate', startDate);
@@ -55,6 +56,7 @@ export const fetchSettlements = async ({
     destination: item.destination,
     amount: item.amount,
     isPaid: item.isPaid,
+    createdAt: item.createdAt,
   }));
 
   return { settlements, totalCount: data.totalElements };

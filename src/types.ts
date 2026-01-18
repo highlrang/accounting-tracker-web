@@ -5,5 +5,6 @@ export interface Settlement {
   destination: string;
   isPaid: boolean;
   amount: number;
+  createdAt?: string;
   isDeleted?: boolean;
 }
