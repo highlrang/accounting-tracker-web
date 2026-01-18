@@ -3,6 +3,7 @@ export interface Settlement {
   itemDate: string;
   origin: string;
   destination: string;
+  notes?: string;
   isPaid: boolean;
   amount: number;
   createdAt?: string;

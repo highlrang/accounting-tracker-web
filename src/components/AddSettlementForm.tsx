@@ -11,12 +11,13 @@ interface NewSettlementEntry {
   itemDate: string;
   origin: string;
   destination: string;
+  notes?: string;
   amount: number;
 }
 
 const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose }) => {
   const [newSettlement, setNewSettlement] = useState<NewSettlementEntry>({
-    itemDate: '', origin: '', destination: '', amount: 0
+    itemDate: '', origin: '', destination: '', notes: '', amount: 0
   });
 
   const handleChange = (field: keyof NewSettlementEntry, value: string | number) => {
@@ -38,6 +39,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
       itemDate: newSettlement.itemDate,
       origin: newSettlement.origin,
       destination: newSettlement.destination,
+      notes: newSettlement.notes,
       amount: newSettlement.amount,
       isPaid: false,
     });
@@ -57,6 +59,15 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               value={newSettlement.itemDate}
               onChange={(e) => handleChange('itemDate', e.target.value)}
               required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="notes">비고</label>
+            <input
+              id="notes"
+              type="text"
+              value={newSettlement.notes}
+              onChange={(e) => handleChange('notes', e.target.value)}
             />
           </div>
           <div className="form-group">

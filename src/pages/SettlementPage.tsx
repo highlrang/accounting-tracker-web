@@ -272,6 +272,7 @@ function SettlementPage() {
         <thead>
           <tr>
             <th>순번</th>
+            <th>비고</th>
             <th>날짜</th>
             <th>출발지</th>
             <th>도착지</th>
@@ -283,6 +284,7 @@ function SettlementPage() {
           {data.map((item, index) => (
             <tr key={item.id} onClick={() => openUpdateModal(item)} className="clickable-row">
               <td data-label="순번">{index + 1}</td>
+              <td data-label="비고">{item.notes}</td>
               <td data-label="날짜">{item.itemDate}</td>
               <td data-label="출발지">{item.origin}</td>
               <td data-label="도착지">{item.destination}</td>

@@ -16,7 +16,7 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
   const [origin, setOrigin] = useState(settlement.origin);
 
   const [destination, setDestination] = useState(settlement.destination);
-
+  const [notes, setNotes] = useState(settlement.notes ?? '');
   const [amount, setAmount] = useState(settlement.amount);
 
   const [isPaid, setIsPaid] = useState(settlement.isPaid);
@@ -30,6 +30,7 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
     setOrigin(settlement.origin);
 
     setDestination(settlement.destination);
+    setNotes(settlement.notes ?? '');
 
     setAmount(settlement.amount);
 
@@ -51,7 +52,7 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
 
     }
 
-    onUpdate({ ...settlement, itemDate, origin, destination, amount, isPaid });
+    onUpdate({ ...settlement, itemDate, origin, destination, notes, amount, isPaid });
 
     onClose();
 
@@ -94,6 +95,24 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
                         onChange={(e) => setItemDate(e.target.value)}
 
                         required
+
+                      />
+
+                    </div>
+
+                    <div className="form-group">
+
+                      <label htmlFor="notes">비고</label>
+
+                      <input
+
+                        id="notes"
+
+                        type="text"
+
+                        value={notes}
+
+                        onChange={(e) => setNotes(e.target.value)}
 
                       />
 
