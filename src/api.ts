@@ -89,6 +89,7 @@ export const addSettlements = async (newSettlementItems: Omit<Settlement, 'id' |
       itemDate: addedItem.itemDate,
       origin: addedItem.origin,
       destination: addedItem.destination,
+      notes: addedItem.notes,
       amount: addedItem.amount,
       isPaid: addedItem.isPaid,
     });
@@ -120,6 +121,7 @@ export const updateSettlement = async (updatedSettlement: Settlement): Promise<S
     itemDate: data.itemDate,
     origin: data.origin,
     destination: data.destination,
+    notes: data.notes,
     amount: data.amount,
     isPaid: data.isPaid,
   };
@@ -140,6 +142,7 @@ export const updateSettlementsStatus = async (ids: number[], isPaidStatus: boole
       itemDate: currentSettlementData.itemDate,
       origin: currentSettlementData.origin,
       destination: currentSettlementData.destination,
+      notes: currentSettlementData.notes,
       amount: currentSettlementData.amount,
       isPaid: isPaidStatus,
     };
