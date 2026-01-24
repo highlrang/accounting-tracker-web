@@ -29,12 +29,10 @@ function StatisticsPage() {
     }
   };
 
-  const today = new Date();
-
   const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
-  const [period, setPeriod] = useState<'daily' | 'monthly' | 'yearly'>('monthly');
-  const [tempStartDate, setTempStartDate] = useState(getFormattedDate(period, today));
-  const [tempEndDate, setTempEndDate] = useState(getFormattedDate(period, today));
+  const [period, setPeriod] = useState<'by-period' | 'monthly' | 'yearly'>('by-period');
+  const [tempStartDate, setTempStartDate] = useState('');
+  const [tempEndDate, setTempEndDate] = useState('');
 
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
@@ -44,7 +42,6 @@ function StatisticsPage() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [aggregatedStats, setAggregatedStats] = useState<AggregatedStat[]>([]);
 
-  // States for infinite scroll on the aggregated stats table
   const [displayedStats, setDisplayedStats] = useState<AggregatedStat[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -52,6 +49,18 @@ function StatisticsPage() {
   const observerTarget = useRef(null);
 
   useEffect(() => {
+    const today = new Date();
+    const oneMonthAgo = new Date(today);
+    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+    
+    const initialStartDate = getFormattedDate('daily', oneMonthAgo);
+    const initialEndDate = getFormattedDate('daily', today);
+
+    setTempStartDate(initialStartDate);
+    setTempEndDate(initialEndDate);
+    setStartDateFilter(initialStartDate);
+    setEndDateFilter(initialEndDate);
+
     fetchSettlements({ size: 100000, page: 0 }).then(({ settlements }) => {
       setData(settlements);
       setInitialLoading(false);
@@ -70,62 +79,63 @@ function StatisticsPage() {
 
     let result = data;
 
-    if (startDateFilter) {
+    if (startDateFilter && endDateFilter) {
       if (period === 'yearly') {
-        result = result.filter(item => item.itemDate >= `${startDateFilter}-01-01`);
+        const start = `${startDateFilter}-01-01`;
+        const end = `${endDateFilter}-12-31`;
+        result = result.filter(item => item.itemDate >= start && item.itemDate <= end);
       } else if (period === 'monthly') {
-        result = result.filter(item => item.itemDate >= `${startDateFilter}-01`);
-      } else {
-        result = result.filter(item => item.itemDate >= startDateFilter);
+        const start = `${startDateFilter}-01`;
+        const end = `${endDateFilter}-31`;
+        result = result.filter(item => item.itemDate >= start && item.itemDate <= end);
+      } else { // by-period
+        result = result.filter(item => item.itemDate >= startDateFilter && item.itemDate <= endDateFilter);
       }
     }
-    if (endDateFilter) {
-      if (period === 'yearly') {
-        result = result.filter(item => item.itemDate <= `${endDateFilter}-12-31`);
-      } else if (period === 'monthly') {
-        result = result.filter(item => item.itemDate <= `${endDateFilter}-31`);
-      } else {
-        result = result.filter(item => item.itemDate <= endDateFilter);
-      }
-    }
+
     if (paidFilter !== 'all') {
       result = result.filter(item => (paidFilter === 'paid' ? item.isPaid : !item.isPaid));
     }
 
-    setTotalCount(result.length);
-    setTotalAmount(result.reduce((sum, item) => sum + item.amount, 0));
+    const currentTotalCount = result.length;
+    const currentTotalAmount = result.reduce((sum, item) => sum + item.amount, 0);
+    setTotalCount(currentTotalCount);
+    setTotalAmount(currentTotalAmount);
 
-    const statsMap = new Map<string, { count: number; amount: number }>();
-    result.forEach(item => {
-      let key = '';
-      if (period === 'daily') {
-        key = item.itemDate;
-      } else if (period === 'monthly') {
-        key = item.itemDate.substring(0, 7);
-      } else {
-        key = item.itemDate.substring(0, 4);
-      }
+    if (period === 'by-period') {
+      const newAggregatedStats = currentTotalCount > 0 ? [{
+        period: `${startDateFilter} ~ ${endDateFilter}`,
+        count: currentTotalCount,
+        amount: currentTotalAmount,
+      }] : [];
+      setAggregatedStats(newAggregatedStats);
+      setDisplayedStats(newAggregatedStats);
+      setHasMore(false);
+    } else { // monthly or yearly
+      const statsMap = new Map<string, { count: number; amount: number }>();
+      result.forEach(item => {
+        const key = period === 'monthly' ? item.itemDate.substring(0, 7) : item.itemDate.substring(0, 4);
 
-      if (!statsMap.has(key)) {
-        statsMap.set(key, { count: 0, amount: 0 });
-      }
-      const currentStats = statsMap.get(key)!;
-      currentStats.count++;
-      currentStats.amount += item.amount;
-    });
+        if (!statsMap.has(key)) {
+          statsMap.set(key, { count: 0, amount: 0 });
+        }
+        const currentStats = statsMap.get(key)!;
+        currentStats.count++;
+        currentStats.amount += item.amount;
+      });
 
-    const sortedStats = Array.from(statsMap.entries())
-      .map(([key, value]) => ({ period: key, count: value.count, amount: value.amount }))
-      .sort((a, b) => a.period.localeCompare(b.period));
+      const sortedStats = Array.from(statsMap.entries())
+        .map(([key, value]) => ({ period: key, count: value.count, amount: value.amount }))
+        .sort((a, b) => a.period.localeCompare(b.period));
 
-    setAggregatedStats(sortedStats);
-    setDisplayedStats(sortedStats.slice(0, ITEMS_PER_PAGE));
-    setCurrentPage(1);
-    setHasMore(sortedStats.length > ITEMS_PER_PAGE);
+      setAggregatedStats(sortedStats);
+      setDisplayedStats(sortedStats.slice(0, ITEMS_PER_PAGE));
+      setCurrentPage(1);
+      setHasMore(sortedStats.length > ITEMS_PER_PAGE);
+    }
     setIsCalculatingStats(false);
   }, [startDateFilter, endDateFilter, paidFilter, data, period, initialLoading]);
 
-  // Effect for IntersectionObserver
   useEffect(() => {
     const observer = new IntersectionObserver(
       entries => {
@@ -147,15 +157,11 @@ function StatisticsPage() {
     };
   }, [hasMore, isFetchingMore]);
 
-  // Effect to load more stats when page changes
   useEffect(() => {
     if (currentPage > 1) {
       setIsFetchingMore(true);
-      setTimeout(() => { // Simulate network delay for loading more stats
-        const newDisplayedStats = aggregatedStats.slice(
-          0,
-          currentPage * ITEMS_PER_PAGE
-        );
+      setTimeout(() => {
+        const newDisplayedStats = aggregatedStats.slice(0, currentPage * ITEMS_PER_PAGE);
         setDisplayedStats(newDisplayedStats);
         setHasMore(currentPage * ITEMS_PER_PAGE < aggregatedStats.length);
         setIsFetchingMore(false);
@@ -164,11 +170,21 @@ function StatisticsPage() {
   }, [currentPage, aggregatedStats]);
 
 
-  const handlePeriodChange = (newPeriod: 'daily' | 'monthly' | 'yearly') => {
+  const handlePeriodChange = (newPeriod: 'by-period' | 'monthly' | 'yearly') => {
     setPeriod(newPeriod);
     const today = new Date();
-    setTempStartDate(getFormattedDate(newPeriod, today));
-    setTempEndDate(getFormattedDate(newPeriod, today));
+    if (newPeriod === 'by-period') {
+      const oneMonthAgo = new Date(today);
+      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+      setTempStartDate(getFormattedDate('daily', oneMonthAgo));
+      setTempEndDate(getFormattedDate('daily', today));
+    } else if (newPeriod === 'monthly') {
+      setTempStartDate(getFormattedDate('monthly', today));
+      setTempEndDate(getFormattedDate('monthly', today));
+    } else { // yearly
+      setTempStartDate(getFormattedDate('yearly', today));
+      setTempEndDate(getFormattedDate('yearly', today));
+    }
   };
 
   const renderDateInputs = () => {
@@ -182,6 +198,7 @@ function StatisticsPage() {
               value={tempStartDate}
               onChange={(e) => setTempStartDate(e.target.value)}
             />
+            ~
             <input 
               type="month" 
               className="search-input" 
@@ -200,6 +217,7 @@ function StatisticsPage() {
               value={tempStartDate}
               onChange={(e) => setTempStartDate(e.target.value)}
             />
+            ~
             <input 
               type="number" 
               placeholder="종료년도"
@@ -209,7 +227,7 @@ function StatisticsPage() {
             />
           </>
         );
-      default: // daily
+      default: // by-period
         return (
           <>
             <input 
@@ -218,6 +236,7 @@ function StatisticsPage() {
               value={tempStartDate}
               onChange={(e) => setTempStartDate(e.target.value)}
             />
+            ~
             <input 
               type="date" 
               className="search-input" 
@@ -232,25 +251,20 @@ function StatisticsPage() {
   if (initialLoading) {
     return (
       <div>
-        {/* <div className="page-header">
-        </div> */}
-        {/* <p>로딩중...</p> */}
       </div>
     );
   }
 
   return (
     <div>
-      {/* <div className="page-header">
-      </div> */}
       <div className="search-bar">
         <div className="search-bar-row">
           <select 
             className="filter-select" 
             value={period}
-            onChange={(e) => handlePeriodChange(e.target.value as 'daily' | 'monthly' | 'yearly')}
+            onChange={(e) => handlePeriodChange(e.target.value as 'by-period' | 'monthly' | 'yearly')}
           >
-            <option value="daily">일별</option>
+            <option value="by-period">기간별</option>
             <option value="monthly">월별</option>
             <option value="yearly">년별</option>
           </select>
@@ -299,16 +313,15 @@ function StatisticsPage() {
             </tbody>
           </table>
         )}
-        {isFetchingMore && (
+        {isFetchingMore && period !== 'by-period' && (
           <div style={{textAlign: 'center', padding: '1rem'}}>
             <div className="loading-spinner"></div>
-            {/* <p>로딩 중...</p> */}
           </div>
         )}
-        {!hasMore && displayedStats.length > 0 && (
+        {!hasMore && displayedStats.length > 0 && period !== 'by-period' &&(
           <p style={{textAlign: 'center', padding: '1rem', color: '#777'}}>모든 항목을 불러왔습니다.</p>
         )}
-        <div ref={observerTarget} style={{ height: '1px', margin: '1rem 0' }}></div>
+        {period !== 'by-period' && <div ref={observerTarget} style={{ height: '1px', margin: '1rem 0' }}></div>}
 
         {aggregatedStats.length === 0 && !isCalculatingStats && (
           <p>데이터가 없습니다.</p>
