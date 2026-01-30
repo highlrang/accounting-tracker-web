@@ -30,11 +30,13 @@ function SettlementPage() {
   };
 
   const today = new Date();
-  const oneYearAgo = new Date();
-  oneYearAgo.setFullYear(today.getFullYear() - 1);
+  const sixMonthsAgo = new Date(today);
+  sixMonthsAgo.setMonth(today.getMonth() - 6);
+  const januaryFirst2026 = new Date(2026, 0, 1);
+  const initialStartDate = sixMonthsAgo < januaryFirst2026 ? januaryFirst2026 : sixMonthsAgo;
 
   // Filter states for UI
-  const [tempStartDate, setTempStartDate] = useState(getFormattedDate(oneYearAgo));
+  const [tempStartDate, setTempStartDate] = useState(getFormattedDate(initialStartDate));
   const [tempEndDate, setTempEndDate] = useState(getFormattedDate(today));
   const [tempKeywordFilter, setTempKeywordFilter] = useState('');
   const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(null);
