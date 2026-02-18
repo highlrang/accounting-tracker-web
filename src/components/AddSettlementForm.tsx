@@ -67,6 +67,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               id="notes"
               type="text"
               value={newSettlement.notes}
+              autoComplete="off"
               onChange={(e) => handleChange('notes', e.target.value)}
             />
           </div>
@@ -76,6 +77,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               id="origin"
               type="text"
               value={newSettlement.origin}
+              autoComplete="off"
               onChange={(e) => handleChange('origin', e.target.value)}
               required
             />
@@ -86,6 +88,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               id="destination"
               type="text"
               value={newSettlement.destination}
+              autoComplete="off"
               onChange={(e) => handleChange('destination', e.target.value)}
               required
             />
@@ -96,6 +99,7 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               id="amount"
               type="text"
               value={newSettlement.amount === 0 ? '' : newSettlement.amount.toLocaleString('ko-KR')}
+              autoComplete="off"
               onChange={(e) => {
                 const rawValue = e.target.value.replace(/[^0-9]/g, '');
                 handleChange('amount', rawValue === '' ? 0 : Number(rawValue));

@@ -112,6 +112,8 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
 
                         value={notes}
 
+                        autoComplete="off"
+
                         onChange={(e) => setNotes(e.target.value)}
 
                       />
@@ -129,6 +131,8 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
                         type="text"
 
                         value={origin}
+
+                        autoComplete="off"
 
                         onChange={(e) => setOrigin(e.target.value)}
 
@@ -150,6 +154,8 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
 
                         value={destination}
 
+                        autoComplete="off"
+
                         onChange={(e) => setDestination(e.target.value)}
 
                         required
@@ -169,6 +175,8 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
                         type="text"
 
                         value={amount === 0 ? '' : amount.toLocaleString('ko-KR')}
+
+                        autoComplete="off"
 
                         onChange={(e) => {
 

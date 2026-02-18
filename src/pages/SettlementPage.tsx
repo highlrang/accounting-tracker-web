@@ -297,6 +297,7 @@ function SettlementPage() {
             placeholder="키워드로 검색" 
             className="search-input" 
             value={tempKeywordFilter}
+            autoComplete="off"
             onChange={(e) => setTempKeywordFilter(e.target.value)}
           />
           <select
