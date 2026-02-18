@@ -9,6 +9,40 @@ interface AggregatedStat {
 }
 
 const ITEMS_PER_PAGE = 20;
+const STATISTICS_STORAGE_KEY = 'statisticsPageStateV1';
+
+const readStoredStatisticsState = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(STATISTICS_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as {
+      period?: unknown;
+      tempStartDate?: unknown;
+      tempEndDate?: unknown;
+      tempPaidFilter?: unknown;
+      startDateFilter?: unknown;
+      endDateFilter?: unknown;
+      paidFilter?: unknown;
+    };
+    const isPeriod = (value: unknown): value is 'by-period' | 'monthly' | 'yearly' =>
+      value === 'by-period' || value === 'monthly' || value === 'yearly';
+    const isPaidFilter = (value: unknown): value is 'all' | 'paid' | 'unpaid' =>
+      value === 'all' || value === 'paid' || value === 'unpaid';
+    return {
+      period: isPeriod(parsed.period) ? parsed.period : undefined,
+      tempStartDate: typeof parsed.tempStartDate === 'string' ? parsed.tempStartDate : undefined,
+      tempEndDate: typeof parsed.tempEndDate === 'string' ? parsed.tempEndDate : undefined,
+      tempPaidFilter: isPaidFilter(parsed.tempPaidFilter) ? parsed.tempPaidFilter : undefined,
+      startDateFilter: typeof parsed.startDateFilter === 'string' ? parsed.startDateFilter : undefined,
+      endDateFilter: typeof parsed.endDateFilter === 'string' ? parsed.endDateFilter : undefined,
+      paidFilter: isPaidFilter(parsed.paidFilter) ? parsed.paidFilter : undefined,
+    };
+  } catch (error) {
+    console.warn('Failed to read stored statistics state:', error);
+    return null;
+  }
+};
 
 function StatisticsPage() {
   const [data, setData] = useState<Settlement[]>([]);
@@ -29,14 +63,22 @@ function StatisticsPage() {
     }
   };
 
-  const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
-  const [period, setPeriod] = useState<'by-period' | 'monthly' | 'yearly'>('by-period');
-  const [tempStartDate, setTempStartDate] = useState('');
-  const [tempEndDate, setTempEndDate] = useState('');
+  const storedState = React.useMemo(() => readStoredStatisticsState(), []);
 
-  const [startDateFilter, setStartDateFilter] = useState('');
-  const [endDateFilter, setEndDateFilter] = useState('');
-  const [paidFilter, setPaidFilter] = useState<'all' | 'paid' | 'unpaid'>('all');
+  const today = new Date();
+  const oneMonthAgo = new Date(today);
+  oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+  const defaultStartDate = getFormattedDate('daily', oneMonthAgo);
+  const defaultEndDate = getFormattedDate('daily', today);
+
+  const [tempPaidFilter, setTempPaidFilter] = useState<'all' | 'paid' | 'unpaid'>(storedState?.tempPaidFilter ?? 'all');
+  const [period, setPeriod] = useState<'by-period' | 'monthly' | 'yearly'>(storedState?.period ?? 'by-period');
+  const [tempStartDate, setTempStartDate] = useState(storedState?.tempStartDate ?? defaultStartDate);
+  const [tempEndDate, setTempEndDate] = useState(storedState?.tempEndDate ?? defaultEndDate);
+
+  const [startDateFilter, setStartDateFilter] = useState(storedState?.startDateFilter ?? defaultStartDate);
+  const [endDateFilter, setEndDateFilter] = useState(storedState?.endDateFilter ?? defaultEndDate);
+  const [paidFilter, setPaidFilter] = useState<'all' | 'paid' | 'unpaid'>(storedState?.paidFilter ?? 'all');
 
   const [totalCount, setTotalCount] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
@@ -49,18 +91,6 @@ function StatisticsPage() {
   const observerTarget = useRef(null);
 
   useEffect(() => {
-    const today = new Date();
-    const oneMonthAgo = new Date(today);
-    oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-    
-    const initialStartDate = getFormattedDate('daily', oneMonthAgo);
-    const initialEndDate = getFormattedDate('daily', today);
-
-    setTempStartDate(initialStartDate);
-    setTempEndDate(initialEndDate);
-    setStartDateFilter(initialStartDate);
-    setEndDateFilter(initialEndDate);
-
     fetchSettlements({ size: 100000, page: 0 }).then(({ settlements }) => {
       setData(settlements);
       setInitialLoading(false);
@@ -135,6 +165,32 @@ function StatisticsPage() {
     }
     setIsCalculatingStats(false);
   }, [startDateFilter, endDateFilter, paidFilter, data, period, initialLoading]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stateToStore = {
+      period,
+      tempStartDate,
+      tempEndDate,
+      tempPaidFilter,
+      startDateFilter,
+      endDateFilter,
+      paidFilter,
+    };
+    try {
+      window.localStorage.setItem(STATISTICS_STORAGE_KEY, JSON.stringify(stateToStore));
+    } catch (error) {
+      console.warn('Failed to store statistics state:', error);
+    }
+  }, [
+    period,
+    tempStartDate,
+    tempEndDate,
+    tempPaidFilter,
+    startDateFilter,
+    endDateFilter,
+    paidFilter,
+  ]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

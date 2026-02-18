@@ -8,6 +8,38 @@ import UpdateSettlementForm from '../components/UpdateSettlementForm';
 import DeleteConfirmationModal from '../components/DeleteConfirmationModal';
 
 const ITEMS_PER_PAGE = 10; // Define items per page for infinite scroll
+const SETTLEMENT_STORAGE_KEY = 'settlementPageStateV1';
+
+const readStoredSettlementState = () => {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(SETTLEMENT_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as {
+      tempStartDate?: unknown;
+      tempEndDate?: unknown;
+      tempKeywordFilter?: unknown;
+      tempPaidFilter?: unknown;
+      startDateFilter?: unknown;
+      endDateFilter?: unknown;
+      keywordFilter?: unknown;
+      paidFilter?: unknown;
+    };
+    return {
+      tempStartDate: typeof parsed.tempStartDate === 'string' ? parsed.tempStartDate : undefined,
+      tempEndDate: typeof parsed.tempEndDate === 'string' ? parsed.tempEndDate : undefined,
+      tempKeywordFilter: typeof parsed.tempKeywordFilter === 'string' ? parsed.tempKeywordFilter : undefined,
+      tempPaidFilter: typeof parsed.tempPaidFilter === 'boolean' ? parsed.tempPaidFilter : parsed.tempPaidFilter === null ? null : undefined,
+      startDateFilter: typeof parsed.startDateFilter === 'string' ? parsed.startDateFilter : undefined,
+      endDateFilter: typeof parsed.endDateFilter === 'string' ? parsed.endDateFilter : undefined,
+      keywordFilter: typeof parsed.keywordFilter === 'string' ? parsed.keywordFilter : undefined,
+      paidFilter: typeof parsed.paidFilter === 'boolean' ? parsed.paidFilter : parsed.paidFilter === null ? null : undefined,
+    };
+  } catch (error) {
+    console.warn('Failed to read stored settlement state:', error);
+    return null;
+  }
+};
 
 function SettlementPage() {
   const [data, setData] = useState<Settlement[]>([]); // Data currently displayed (paginated)
@@ -35,17 +67,19 @@ function SettlementPage() {
   const januaryFirst2026 = new Date(2026, 0, 1);
   const initialStartDate = sixMonthsAgo < januaryFirst2026 ? januaryFirst2026 : sixMonthsAgo;
 
+  const storedState = React.useMemo(() => readStoredSettlementState(), []);
+
   // Filter states for UI
-  const [tempStartDate, setTempStartDate] = useState(getFormattedDate(initialStartDate));
-  const [tempEndDate, setTempEndDate] = useState(getFormattedDate(today));
-  const [tempKeywordFilter, setTempKeywordFilter] = useState('');
-  const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(null);
+  const [tempStartDate, setTempStartDate] = useState(storedState?.tempStartDate ?? getFormattedDate(initialStartDate));
+  const [tempEndDate, setTempEndDate] = useState(storedState?.tempEndDate ?? getFormattedDate(today));
+  const [tempKeywordFilter, setTempKeywordFilter] = useState(storedState?.tempKeywordFilter ?? '');
+  const [tempPaidFilter, setTempPaidFilter] = useState<boolean | null>(storedState?.tempPaidFilter ?? null);
 
   // Committed filter states for filtering logic
-  const [startDateFilter, setStartDateFilter] = useState('');
-  const [endDateFilter, setEndDateFilter] = useState('');
-  const [keywordFilter, setKeywordFilter] = useState('');
-  const [paidFilter, setPaidFilter] = useState<boolean | null>(null);
+  const [startDateFilter, setStartDateFilter] = useState(storedState?.startDateFilter ?? '');
+  const [endDateFilter, setEndDateFilter] = useState(storedState?.endDateFilter ?? '');
+  const [keywordFilter, setKeywordFilter] = useState(storedState?.keywordFilter ?? '');
+  const [paidFilter, setPaidFilter] = useState<boolean | null>(storedState?.paidFilter ?? null);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -95,6 +129,34 @@ function SettlementPage() {
     setCurrentPage(1); // Reset page to 1 on filter/search change
     loadData(1, false, true); // Load first page, replace data, show loading spinner
   }, [startDateFilter, endDateFilter, keywordFilter, paidFilter, loadData]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const stateToStore = {
+      tempStartDate,
+      tempEndDate,
+      tempKeywordFilter,
+      tempPaidFilter,
+      startDateFilter,
+      endDateFilter,
+      keywordFilter,
+      paidFilter,
+    };
+    try {
+      window.localStorage.setItem(SETTLEMENT_STORAGE_KEY, JSON.stringify(stateToStore));
+    } catch (error) {
+      console.warn('Failed to store settlement state:', error);
+    }
+  }, [
+    tempStartDate,
+    tempEndDate,
+    tempKeywordFilter,
+    tempPaidFilter,
+    startDateFilter,
+    endDateFilter,
+    keywordFilter,
+    paidFilter,
+  ]);
 
   // Effect for fetching more data on page increment (infinite scroll)
   useEffect(() => {
