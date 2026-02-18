@@ -112,8 +112,6 @@ const UpdateSettlementForm: React.FC<UpdateSettlementFormProps> = ({ settlement,
 
                         value={notes}
 
-                        autoComplete="off"
-
                         onChange={(e) => setNotes(e.target.value)}
 
                       />

@@ -67,7 +67,6 @@ const AddSettlementForm: React.FC<AddSettlementFormProps> = ({ onAdd, onClose })
               id="notes"
               type="text"
               value={newSettlement.notes}
-              autoComplete="off"
               onChange={(e) => handleChange('notes', e.target.value)}
             />
           </div>
